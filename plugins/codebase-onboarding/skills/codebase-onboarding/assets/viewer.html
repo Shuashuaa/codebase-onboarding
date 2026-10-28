@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__ATLAS_TITLE__</title>
+<style>
+/*__FONTS__*/
+/* Minimal monochrome docs style: white/black surfaces, hairline borders, Geist type, color only as small accents. */
+:root{
+  --page:#fafafa; --bg:#ffffff; --panel:#ffffff; --sub:#fafafa; --hover:#f2f2f2;
+  --ink:#171717; --muted:#666666; --faint:#f2f2f2; --line:#eaeaea; --line-strong:#d4d4d4;
+  --accent:#0070f3; --accent-soft:rgba(0,112,243,.12);
+  --sans:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --serif:var(--sans);
+  --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --l-client:#0070f3; --l-identity:#e5484d; --l-edge:#f5a524; --l-compute:#29a383;
+  --l-messaging:#8e4ec6; --l-data:#12a5b0; --l-external:#8f8f8f; --l-ops:#d6409f;
+  --t-client:#0060d1; --t-identity:#c6262e; --t-edge:#a35200; --t-compute:#18794e;
+  --t-messaging:#793aaf; --t-data:#0b7a83; --t-external:#666666; --t-ops:#b02e7c;
+  --ok:#18794e; --ok-bg:rgba(41,163,131,.12); --warn:#a35200; --warn-bg:rgba(245,165,36,.16); --bad:#c6262e; --bad-bg:rgba(229,72,77,.12);
+  --shadow:0 1px 2px rgba(0,0,0,.04);
+  --shadow-pop:0 4px 12px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.06);
+  --grid:rgba(0,0,0,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --page:#000000; --bg:#0a0a0a; --panel:#0a0a0a; --sub:#111111; --hover:#1a1a1a;
+  --ink:#ededed; --muted:#a1a1a1; --faint:#1a1a1a; --line:#262626; --line-strong:#3d3d3d;
+  --accent:#52a8ff; --accent-soft:rgba(82,168,255,.16);
+  --l-client:#52a8ff; --l-identity:#ff6369; --l-edge:#ffb224; --l-compute:#3dd68c;
+  --l-messaging:#bf7af0; --l-data:#2fd6e0; --l-external:#8f8f8f; --l-ops:#f076c4;
+  --t-client:#52a8ff; --t-identity:#ff6369; --t-edge:#ffb224; --t-compute:#3dd68c;
+  --t-messaging:#bf7af0; --t-data:#2fd6e0; --t-external:#a1a1a1; --t-ops:#f076c4;
+  --ok:#3dd68c; --ok-bg:rgba(61,214,140,.14); --warn:#ffb224; --warn-bg:rgba(255,178,36,.14); --bad:#ff6369; --bad-bg:rgba(255,99,105,.14);
+  --shadow:none; --shadow-pop:0 4px 16px rgba(0,0,0,.5),0 0 0 1px #262626; --grid:rgba(255,255,255,.06);
+}}
+:root[data-theme="dark"]{
+  --page:#000000; --bg:#0a0a0a; --panel:#0a0a0a; --sub:#111111; --hover:#1a1a1a;
+  --ink:#ededed; --muted:#a1a1a1; --faint:#1a1a1a; --line:#262626; --line-strong:#3d3d3d;
+  --accent:#52a8ff; --accent-soft:rgba(82,168,255,.16);
+  --l-client:#52a8ff; --l-identity:#ff6369; --l-edge:#ffb224; --l-compute:#3dd68c;
+  --l-messaging:#bf7af0; --l-data:#2fd6e0; --l-external:#8f8f8f; --l-ops:#f076c4;
+  --t-client:#52a8ff; --t-identity:#ff6369; --t-edge:#ffb224; --t-compute:#3dd68c;
+  --t-messaging:#bf7af0; --t-data:#2fd6e0; --t-external:#a1a1a1; --t-ops:#f076c4;
+  --ok:#3dd68c; --ok-bg:rgba(61,214,140,.14); --warn:#ffb224; --warn-bg:rgba(255,178,36,.14); --bad:#ff6369; --bad-bg:rgba(255,99,105,.14);
+  --shadow:none; --shadow-pop:0 4px 16px rgba(0,0,0,.5),0 0 0 1px #262626; --grid:rgba(255,255,255,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--page);color:var(--ink);font:14px/1.6 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline;text-underline-offset:3px}
+code,.mono{font-family:var(--mono);font-size:12.5px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+::selection{background:var(--accent-soft)}
+
+header{display:flex;align-items:center;gap:12px;height:64px;padding:0 24px;background:var(--bg)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.avatar{width:24px;height:24px;border-radius:50%;flex:none;background:linear-gradient(135deg,#7928ca,#ff0080 45%,#0070f3);box-shadow:0 0 0 1px var(--line)}
+.slash{color:var(--line-strong);font-size:22px;font-weight:300;line-height:1}
+.brand h1{margin:0;font:500 14px/1.2 var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{font-size:12px;font-weight:500;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.hspace{flex:1}
+.search{position:relative}
+.search input{width:260px;max-width:40vw;height:34px;padding:0 30px 0 32px;border:1px solid var(--line);border-radius:6px;background:var(--sub);color:var(--ink);font:inherit;font-size:13.5px;transition:border-color .15s,box-shadow .15s}
+.search input::placeholder{color:var(--muted)}
+.search input:hover{border-color:var(--line-strong)}
+.search input:focus{outline:none;border-color:var(--line-strong);box-shadow:0 0 0 3px var(--accent-soft);background:var(--bg)}
+.search svg{position:absolute;left:11px;top:10px;opacity:.5}
+.search kbd{position:absolute;right:8px;top:7px;font:500 11px var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 6px;background:var(--bg)}
+.results{position:absolute;right:0;top:42px;width:360px;max-width:90vw;max-height:60vh;overflow:auto;background:var(--bg);border-radius:12px;box-shadow:var(--shadow-pop);display:none;padding:6px}
+.results div{padding:8px 10px;border-radius:6px;cursor:pointer}
+.results div:hover{background:var(--hover)}
+.results small{color:var(--muted);display:block}
+.iconbtn{height:32px;min-width:32px;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:0 10px;line-height:1;font-size:13px;font-weight:500;transition:background .15s,border-color .15s}
+.iconbtn:hover{background:var(--hover);border-color:var(--line-strong)}
+#theme{width:34px;height:34px;padding:0;display:grid;place-items:center;color:var(--ink)}
+
+.layout{display:block}
+nav{position:sticky;top:0;z-index:20;display:flex;gap:2px;height:48px;align-items:stretch;padding:0 16px;background:var(--bg);border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{position:relative;display:flex;align-items:center;gap:6px;flex:none;border:0;background:none;padding:0 12px;color:var(--muted);font-size:14px;white-space:nowrap;transition:color .15s}
+nav button::before{content:"";position:absolute;inset:8px 2px;border-radius:6px;background:transparent;transition:background .15s;z-index:-1}
+nav button:hover{color:var(--ink)} nav button:hover::before{background:var(--hover)}
+nav button.on{color:var(--ink)}
+nav button.on::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:2px;background:var(--ink);border-radius:2px}
+nav button span{font:500 11px var(--mono);color:var(--muted);background:var(--hover);border-radius:999px;padding:1px 6px}
+main{padding:40px 24px 80px;min-width:0;max-width:1248px;margin:0 auto}
+.view{display:none} .view.on{display:block}
+h2{font:600 32px/1.2 var(--sans);letter-spacing:-.03em;margin:0 0 8px}
+h3{font:600 18px/1.3 var(--sans);letter-spacing:-.01em;margin:40px 0 14px}
+.lede{color:var(--muted);font-size:15px;max-width:760px;margin:0 0 24px}
+.card{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:24px 0}
+.tile{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px 18px;cursor:pointer;transition:border-color .15s,background .15s}
+.tile:hover{border-color:var(--line-strong);background:var(--sub)}
+.tile b{display:block;font:600 28px/1.1 var(--sans);letter-spacing:-.03em}
+.tile small{color:var(--muted);font-size:13px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:24px;border:1px solid var(--line);border-radius:999px;padding:0 10px;font-size:12px;font-weight:500;background:var(--bg);white-space:nowrap;color:var(--ink)}
+.chip .dot{width:8px;height:8px;border-radius:50%}
+.badge{font:500 11px/1 var(--sans);padding:4px 8px;border-radius:999px;white-space:nowrap;text-transform:capitalize}
+.b-declared{color:var(--ok);background:var(--ok-bg)} .b-inferred{color:var(--warn);background:var(--warn-bg)} .b-secret{color:var(--bad);background:var(--bad-bg)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:10px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;font-weight:500;color:var(--muted);background:var(--sub)}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--sub)}
+.method{font:500 11px var(--mono);padding:2px 7px;border-radius:4px;border:1px solid var(--line);color:var(--muted)}
+.m-get{color:var(--ok);background:var(--ok-bg);border-color:transparent} .m-post{color:var(--t-client);background:var(--accent-soft);border-color:transparent}
+.m-put,.m-patch{color:var(--warn);background:var(--warn-bg);border-color:transparent} .m-delete{color:var(--bad);background:var(--bad-bg);border-color:transparent}
+.gaps li{margin:6px 0}
+.callout{border:1px solid var(--line);background:var(--sub);padding:14px 18px;border-radius:12px}
+.callout ul{padding-left:18px!important}
+.summary{font:400 16px/1.7 var(--sans);max-width:820px}
+/* tour */
+.tour{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.stop{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:18px 20px;transition:border-color .15s}
+.stop:hover{border-color:var(--line-strong)}
+.stop .n{font:500 12px var(--mono);color:var(--muted)}
+.stop h4{margin:6px 0 6px;font:600 15px var(--sans);letter-spacing:-.01em}
+.stop p{margin:0 0 12px;color:var(--muted);font-size:13.5px}
+/* map */
+.mapbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0}
+.mapbar .chip{cursor:pointer;user-select:none;transition:background .15s,border-color .15s,opacity .15s}
+.mapbar .chip:hover{background:var(--hover);border-color:var(--line-strong)}
+.mapbar .chip.off{opacity:.4}
+.mapgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;height:calc(100vh - 210px);min-height:500px}
+.canvas{position:relative;background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:grab;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px}
+.canvas.drag{cursor:grabbing}
+.canvas svg{width:100%;height:100%;display:block}
+.zoom{position:absolute;right:12px;bottom:12px;display:flex;gap:6px}
+.legend{position:absolute;left:12px;bottom:12px;font-size:12px;color:var(--muted);background:var(--bg);padding:4px 10px;border-radius:6px;border:1px solid var(--line)}
+.node rect.box{fill:var(--bg);stroke:var(--line-strong);stroke-width:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.06))}
+.node:hover rect.box{stroke:var(--muted)}
+.node .bar{stroke:none}
+.node text{fill:var(--ink);font-family:var(--sans)}
+.node .t2{fill:var(--muted);font-size:10.5px}
+.node{cursor:pointer}
+.node.sel rect.box{stroke:var(--ink);stroke-width:1.5}
+.node.inferred rect.box{stroke-dasharray:4 3}
+.edge path{fill:none;stroke:var(--muted);stroke-width:1.2;opacity:.5}
+.edge.inferred path{stroke-dasharray:4 4}
+.edge text{font:500 10.5px var(--sans);fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:5px;display:none}
+.edge.hot path{stroke:var(--accent);opacity:1;stroke-width:1.8}
+.edge.hot text,.edge.lbl text{display:block}
+.dim .node:not(.hot){opacity:.2} .dim .edge:not(.hot){opacity:.08}
+.node,.edge{transition:opacity .2s}
+.colhead{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.band{opacity:.05}
+.detail{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:20px;overflow:auto}
+.detail h4{margin:0;font:600 18px var(--sans);letter-spacing:-.02em}
+.detail .kv{display:grid;grid-template-columns:82px 1fr;gap:6px 10px;font-size:13.5px;margin:14px 0}
+.detail .kv b{color:var(--muted);font-weight:400}
+.detail ul{padding-left:0;list-style:none;margin:6px 0}
+.detail li{padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.detail .sec{font-size:12px;font-weight:500;color:var(--muted);margin-top:18px}
+.linkish{cursor:pointer}
+.linkish .chip{transition:border-color .15s,background .15s}
+.linkish:hover .chip{border-color:var(--line-strong);background:var(--hover)}
+/* flows */
+.flowgrid{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px} #flowbody{min-width:0}
+.flowlist button{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px 14px;margin-bottom:8px;transition:border-color .15s,background .15s}
+.flowlist button:hover{border-color:var(--line-strong)}
+.flowlist button.on{border-color:var(--ink);background:var(--sub)}
+.flowlist small{color:var(--muted);display:block}
+.seq{overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px}
+.seq text{font-family:var(--sans);fill:var(--ink)}
+.pbox{fill:var(--bg);stroke:var(--line-strong);stroke-width:1}
+.steps{counter-reset:s;margin:18px 0 0;padding:0;list-style:none}
+.steps li{counter-increment:s;display:grid;grid-template-columns:32px 1fr;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.steps li::before{content:counter(s);width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font:500 11px var(--mono);color:var(--muted);border:1px solid var(--line)}
+/* data */
+.ents{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.ent h4{margin:0 0 4px;font:600 16px var(--sans);letter-spacing:-.01em}
+.ent .meta{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+.ent ul{margin:6px 0 0 18px;padding:0;font-size:13.5px}
+/* run */
+ol.setup{padding:0;list-style:none;counter-reset:st;margin:0;border-left:1px solid var(--line);margin-left:13px}
+ol.setup li{counter-increment:st;display:grid;grid-template-columns:28px 1fr;gap:12px;padding:0 0 22px;margin-left:-14px}
+ol.setup li::before{content:counter(st);width:28px;height:28px;border-radius:50%;background:var(--sub);color:var(--ink);border:1px solid var(--line);display:grid;place-items:center;font:500 12px var(--mono)}
+.cmd{display:flex;align-items:center;gap:10px;background:var(--sub);border:1px solid var(--line);border-radius:6px;padding:8px 12px;margin-top:8px;overflow-x:auto}
+.cmd code{white-space:pre;flex:1}
+.copy{height:24px;border:1px solid var(--line);background:var(--bg);color:var(--muted);font-size:12px;padding:0 8px;border-radius:4px}
+.copy:hover{color:var(--ink);border-color:var(--line-strong)}
+.empty{color:var(--muted)}
+.src a{font-family:var(--mono);font-size:12px}
+@media (max-width:900px){
+  nav{padding:0 8px}
+  nav button span{display:none}
+  main{padding:24px 16px 56px}
+  .search kbd{display:none}
+  .search input{padding-right:12px}
+  h2{font-size:26px}
+  .mapgrid{grid-template-columns:1fr;height:auto}
+  .canvas{height:62vh}
+  .flowgrid{grid-template-columns:1fr}
+  .search input{width:150px}
+  header{padding:0 16px}
+  .brand small,.slash{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="avatar" aria-hidden="true"></span><h1 id="title"></h1><span class="slash" aria-hidden="true">/</span><small>Onboarding</small></div>
+  <div class="hspace"></div>
+  <div class="search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" placeholder="Search…" autocomplete="off" aria-label="Search nodes, APIs, files"><kbd>/</kbd>
+    <div class="results" id="results"></div>
+  </div>
+  <button class="iconbtn" id="theme" title="Toggle light / dark" aria-label="Toggle light or dark theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+</header>
+<div class="layout">
+  <nav id="nav"></nav>
+  <main id="main"></main>
+</div>
+<script id="atlas-data" type="application/json">__ATLAS_JSON__</script>
+<script>
+(function(){
+"use strict";
+const A = JSON.parse(document.getElementById("atlas-data").textContent);
+const LAYERS = [
+  ["client","Client"],["identity","Identity"],["edge","Edge / Gateway"],["compute","Compute"],
+  ["messaging","Messaging"],["data","Data"],["external","External"],["ops","Ops"]
+];
+const LAYER_IDS = LAYERS.map(l=>l[0]);
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const arr = x => Array.isArray(x)?x:(x?[x]:[]);
+const meta = A.meta||{};
+const nodes = arr(A.nodes).map(n=>Object.assign({},n,{layer:LAYER_IDS.includes(n.layer)?n.layer:"external"}));
+const byId = Object.fromEntries(nodes.map(n=>[n.id,n]));
+const edges = arr(A.edges).filter(e=>byId[e.from]&&byId[e.to]);
+const run = A.run||{}, op = A.operate||{}, ctx = A.context||{}, auth = A.auth||{}, data = A.data||{}, code = A.code||{};
+const lcol = l => `var(--l-${l})`;
+document.getElementById("title").textContent = meta.name || "Project";
+
+/* ---------- theme ---------- */
+const root = document.documentElement;
+try{ const t = localStorage.getItem("atlas-theme"); if(t) root.dataset.theme = t; }catch(e){}
+document.getElementById("theme").onclick = ()=>{
+  const dark = root.dataset.theme ? root.dataset.theme==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = dark ? "light" : "dark";
+  try{ localStorage.setItem("atlas-theme", root.dataset.theme); }catch(e){}
+};
+
+/* ---------- helpers ---------- */
+function srcLink(p){
+  if(!p) return "";
+  const path = String(p).replace(/^\.\//,"");
+  let href = "";
+  if(meta.repo && /^https?:/.test(meta.repo) && !/^https?:/.test(path)) href = meta.repo.replace(/\/$/,"") + "/blob/HEAD/" + path;
+  const ed = meta.root && !/^https?:/.test(path) ? `vscode://file/${meta.root.replace(/\/$/,"")}/${path}` : "";
+  return `<span class="src">${href?`<a href="${esc(href)}" target="_blank" rel="noopener">${esc(path)}</a>`:`<code>${esc(path)}</code>`}${ed?` <a href="${esc(ed)}" title="Open in VS Code">↗</a>`:""}</span>`;
+}
+function nodeRef(id){
+  const n = byId[id];
+  if(!n) return srcLink(id);
+  return `<span class="linkish" data-node="${esc(id)}"><span class="chip"><span class="dot" style="background:${lcol(n.layer)}"></span>${esc(n.label)}</span></span>`;
+}
+function conf(c){ return c ? `<span class="badge b-${esc(c)}">${esc(c)}</span>` : ""; }
+function table(rows, cols){
+  rows = arr(rows);
+  if(!rows.length) return "";
+  return `<div class="tablewrap"><table><thead><tr>${cols.map(c=>`<th>${esc(c[1])}</th>`).join("")}</tr></thead><tbody>${
+    rows.map(r=>`<tr>${cols.map(c=>`<td>${c[2]?c[2](r[c[0]],r):esc(Array.isArray(r[c[0]])?r[c[0]].join(", "):r[c[0]])}</td>`).join("")}</tr>`).join("")
+  }</tbody></table></div>`;
+}
+function section(title, body){ return body ? `<h3>${esc(title)}</h3>${body}` : ""; }
+
+/* ---------- views ---------- */
+const views = [];
+function addView(id, label, count, render){ if(count!==0) views.push({id,label,count,render}); }
+
+addView("overview","Overview",null,renderOverview);
+addView("map","Service map",nodes.length,renderMap);
+addView("flows","Flows",arr(A.flows).length,renderFlows);
+addView("apis","APIs",arr(A.apis).length,renderApis);
+addView("auth","Auth",(auth.summary||arr(auth.providers).length||arr(auth.roles).length||arr(auth.service_identities).length||arr(auth.hints).length)?null:0,renderAuth);
+addView("data","Data",arr(data.entities).length,renderData);
+addView("code","Code",(arr(code.entry_points).length+arr(code.modules).length+(code.layout?1:0))||0,renderCode);
+addView("run","Run & ship",(arr(run.setup).length+arr(run.config).length+arr(run.pipeline).length+arr(run.environments).length+arr(run.prerequisites).length)||0,renderRun);
+addView("operate","Operate",(arr(op.logs).length+arr(op.metrics).length+arr(op.alarms).length+arr(op.runbooks).length)||0,renderOperate);
+addView("context","Context",(arr(ctx.glossary).length+arr(ctx.owners).length+arr(ctx.decisions).length+arr(ctx.hotspots).length)||0,renderContext);
+
+const nav = document.getElementById("nav"), main = document.getElementById("main");
+nav.innerHTML = views.map(v=>`<button data-v="${v.id}">${esc(v.label)}${v.count?`<span>${v.count}</span>`:""}</button>`).join("");
+main.innerHTML = views.map(v=>`<section class="view" id="v-${v.id}"></section>`).join("");
+const rendered = {};
+function show(id, opts){
+  if(!views.find(v=>v.id===id)) id = "overview";
+  nav.querySelectorAll("button").forEach(b=>b.classList.toggle("on", b.dataset.v===id));
+  main.querySelectorAll(".view").forEach(s=>s.classList.toggle("on", s.id==="v-"+id));
+  const v = views.find(v=>v.id===id);
+  if(!rendered[id]){ document.getElementById("v-"+id).innerHTML = ""; v.render(document.getElementById("v-"+id)); rendered[id]=true; }
+  if(id==="map" && opts && opts.node) selectNode(opts.node, true);
+  if(id==="map" && opts && opts.focus) focusMany(opts.focus);
+  if(location.hash.slice(1)!==id) history.replaceState(null,"","#"+id);
+  window.scrollTo(0,0);
+}
+nav.addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) show(b.dataset.v); });
+document.addEventListener("click",e=>{
+  const n = e.target.closest("[data-node]"); if(n){ e.preventDefault(); show("map",{node:n.dataset.node}); return; }
+  const g = e.target.closest("[data-goto]"); if(g){ e.preventDefault(); show(g.dataset.goto); }
+  const c = e.target.closest(".copy"); if(c){ navigator.clipboard && navigator.clipboard.writeText(c.dataset.cmd); c.textContent="copied"; setTimeout(()=>c.textContent="copy",1200); }
+});
+
+function renderOverview(el){
+  const stats = [
+    ["map",nodes.length,"components"],["map",edges.length,"connections"],["flows",arr(A.flows).length,"flows"],
+    ["apis",arr(A.apis).length,"endpoints"],["data",arr(data.entities).length,"entities"],["run",arr(run.config).length,"config keys"]
+  ].filter(s=>s[1]);
+  const byLayer = LAYERS.map(([l,lab])=>[l,lab,nodes.filter(n=>n.layer===l).length]).filter(x=>x[2]);
+  const inferred = nodes.filter(n=>n.confidence==="inferred").length + edges.filter(e=>e.confidence==="inferred").length;
+  el.innerHTML = `
+    <h2>${esc(meta.name||"Project")}</h2>
+    <p class="lede">${meta.generated_at?`Generated ${esc(meta.generated_at.slice(0,10))}`:""}${meta.repo?` · <a href="${esc(meta.repo)}" target="_blank" rel="noopener">${esc(meta.repo.replace(/^https?:\/\//,""))}</a>`:""}${inferred?` · ${inferred} inferred items shown dashed`:""}</p>
+    ${meta.summary?`<p class="summary">${esc(meta.summary)}</p>`:`<p class="callout">No summary yet — add <code>meta.summary</code>.</p>`}
+    ${arr(meta.stack).length?`<div class="chips" style="margin-top:14px">${arr(meta.stack).map(s=>`<span class="chip">${esc(s)}</span>`).join("")}</div>`:""}
+    <div class="tiles">${stats.map(s=>`<div class="tile" data-goto="${s[0]}"><b>${s[1]}</b><small>${s[2]}</small></div>`).join("")}</div>
+    <div class="chips">${byLayer.map(([l,lab,c])=>`<span class="chip"><span class="dot" style="background:${lcol(l)}"></span>${esc(lab)} · ${c}</span>`).join("")}</div>
+    ${arr(A.tour).length?`<h3>Guided tour</h3><div class="tour">${arr(A.tour).map((t,i)=>`
+      <div class="stop"><div class="n">STOP ${i+1}</div><h4>${esc(t.title)}</h4><p>${esc(t.body)}</p>
+      <div class="chips">${arr(t.focus).map(f=>byId[f]?nodeRef(f):srcLink(f)).join("")}</div>
+      ${arr(t.focus).some(f=>byId[f])?`<p style="margin-top:10px"><a href="#" data-tour="${i}">Show on map →</a></p>`:""}</div>`).join("")}</div>`:""}
+    ${section("First tasks", table(A.first_tasks,[["title","Task"],["why","Why"],["pointer","Where",v=>esc(v)]]))}
+    ${arr(A.gaps).length?`<h3>Open questions</h3><div class="callout"><ul class="gaps" style="margin:0;padding-left:18px">${arr(A.gaps).map(g=>`<li>${esc(g)}</li>`).join("")}</ul></div>`:""}
+  `;
+  el.addEventListener("click",e=>{ const t=e.target.closest("[data-tour]"); if(t){ e.preventDefault(); show("map",{focus:arr(A.tour[+t.dataset.tour].focus).filter(f=>byId[f])}); } });
+}
+
+/* ---------- map ---------- */
+let mapState = null;
+function renderMap(el){
+  el.innerHTML = `
+    <h2>Service map</h2>
+    <p class="lede">Top to bottom: who calls, who authenticates, who routes, who computes, what queues, what stores. Click a component for details. Dashed = inferred.</p>
+    <div class="mapbar" id="layerchips">${LAYERS.filter(([l])=>nodes.some(n=>n.layer===l)).map(([l,lab])=>`<span class="chip" data-layer="${l}"><span class="dot" style="background:${lcol(l)}"></span>${esc(lab)}</span>`).join("")}
+      <span class="chip" id="toggleInf">Inferred: on</span><span class="chip" id="toggleLabels">Edge labels: on hover</span></div>
+    <div class="mapgrid">
+      <div class="canvas" id="canvas"><svg id="svg"></svg>
+        <div class="legend">solid = declared · dashed = inferred · drag to pan · scroll to zoom</div>
+        <div class="zoom"><button class="iconbtn" id="zin">+</button><button class="iconbtn" id="zout">−</button><button class="iconbtn" id="zfit">Fit</button></div>
+      </div>
+      <aside class="detail" id="detail"><p class="empty">Select a component.</p></aside>
+    </div>`;
+  mapState = {hidden:new Set(), showInf:true, labels:false, sel:null};
+  el.querySelector("#layerchips").addEventListener("click",e=>{
+    const c = e.target.closest("[data-layer]");
+    if(c){ const l=c.dataset.layer; mapState.hidden.has(l)?mapState.hidden.delete(l):mapState.hidden.add(l); c.classList.toggle("off"); drawMap(); }
+    if(e.target.closest("#toggleInf")){ mapState.showInf=!mapState.showInf; e.target.closest("#toggleInf").textContent="Inferred: "+(mapState.showInf?"on":"off"); drawMap(); }
+    if(e.target.closest("#toggleLabels")){ mapState.labels=!mapState.labels; e.target.closest("#toggleLabels").textContent="Edge labels: "+(mapState.labels?"always":"on hover"); drawMap(); }
+  });
+  drawMap(); fit();
+  wirePanZoom();
+}
+const NW=200, NH=56, HG=26, VG=74, SUB=22, LEFT=120, TOP=24;
+// Layers stack top-to-bottom; a layer with many components wraps onto extra rows.
+function layout(vis){
+  const r = document.getElementById("canvas").getBoundingClientRect();
+  const perRow = Math.max(3, Math.floor(((r.width||900)/0.85 - LEFT - 40)/(NW+HG)));
+  const layers = LAYER_IDS.filter(l=>vis.some(n=>n.layer===l));
+  const groups = layers.map(l=>vis.filter(n=>n.layer===l).sort((a,b)=>String(a.group||"").localeCompare(String(b.group||""))||a.label.localeCompare(b.label)));
+  const nb = {}; edges.forEach(e=>{ (nb[e.from]=nb[e.from]||[]).push(e.to); (nb[e.to]=nb[e.to]||[]).push(e.from); });
+  const pos = {}, bands = [];
+  const maxCols = Math.min(perRow, Math.max(...groups.map(g=>g.length)));
+  const width = LEFT + maxCols*(NW+HG) - HG + 40;
+  const place = ()=>{
+    let y = TOP; bands.length = 0;
+    groups.forEach((g,li)=>{
+      const rows = Math.ceil(g.length/perRow), y0 = y;
+      g.forEach((n,i)=>{
+        const row = Math.floor(i/perRow), inRow = Math.min(perRow, g.length-row*perRow), col = i%perRow;
+        const rowW = inRow*(NW+HG)-HG, x0 = LEFT + ((maxCols*(NW+HG)-HG) - rowW)/2;
+        pos[n.id] = {x:x0+col*(NW+HG), y:y+row*(NH+SUB), layer:li};
+      });
+      const h = rows*(NH+SUB)-SUB;
+      bands.push({l:layers[li], y:y0-16, h:h+32});
+      y += h + VG;
+    });
+    return y;
+  };
+  let H = place();
+  for(let s=0;s<3;s++){
+    groups.forEach(g=>{
+      g.forEach(n=>{ const xs=(nb[n.id]||[]).filter(x=>pos[x]&&pos[x].layer!==pos[n.id].layer).map(x=>pos[x].x); n._b = xs.length? xs.reduce((a,b)=>a+b,0)/xs.length : pos[n.id].x; });
+      g.sort((a,b)=>a._b-b._b);
+    });
+    H = place();
+  }
+  return {pos, layers, bands, w: width, h: H - VG + 30};
+}
+function edgePath(a,b,k){
+  const ax=a.x+NW/2, bx=b.x+NW/2;
+  if(a.y<b.y){ const y1=a.y+NH, y2=b.y, dy=(y2-y1)/2; return {d:`M${ax},${y1} C${ax},${y1+dy} ${bx},${y2-dy} ${bx},${y2}`, lx:(ax+bx)/2, ly:(y1+y2)/2}; }
+  if(a.y>b.y){ const y1=a.y, y2=b.y+NH, bend=34+k*10, dy=Math.max((y1-y2)/2,30); const ox=(ax<=bx?-1:1)*bend;
+    return {d:`M${ax+ox*.3},${y1} C${ax+ox},${y1-dy} ${bx+ox},${y2+dy} ${bx+ox*.3},${y2}`, lx:(ax+bx)/2+ox*.8, ly:(y1+y2)/2}; }
+  const left = a.x<b.x, x1 = left?a.x+NW:a.x, x2 = left?b.x:b.x+NW, yy=a.y+NH/2;
+  if(Math.abs(a.x-b.x) < NW+HG+1) return {d:`M${x1},${yy} L${x2},${yy}`, lx:(x1+x2)/2, ly:yy-5};
+  const arc = 26+k*8; return {d:`M${a.x+NW/2},${a.y} C${a.x+NW/2},${a.y-arc} ${b.x+NW/2},${b.y-arc} ${b.x+NW/2},${b.y}`, lx:(a.x+b.x)/2+NW/2, ly:a.y-arc*.75};
+}
+function drawMap(){
+  const svg = document.getElementById("svg");
+  const vis = nodes.filter(n=>!mapState.hidden.has(n.layer) && (mapState.showInf || n.confidence!=="inferred"));
+  const visIds = new Set(vis.map(n=>n.id));
+  const L = layout(vis);
+  mapState.L = L;
+  const vEdges = edges.filter(e=>visIds.has(e.from)&&visIds.has(e.to)&&(mapState.showInf||e.confidence!=="inferred"));
+  const pairCount = {};
+  let h = `<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="currentColor"/></marker></defs><g id="world">`;
+  L.bands.forEach((b,i)=>{ const lab=(LAYERS.find(x=>x[0]===b.l)||[])[1];
+    h+=`<rect class="band" x="0" y="${b.y}" width="${L.w}" height="${b.h}" rx="10" style="fill:${lcol(b.l)}"/>`;
+    h+=`<text class="colhead" x="18" y="${b.y+b.h/2+4}" style="fill:var(--t-${b.l})">${esc(lab)}</text>`; });
+  h += `<g id="edges">`;
+  vEdges.forEach((e,i)=>{
+    const k=[e.from,e.to].sort().join("|"); pairCount[k]=(pairCount[k]||0)+1;
+    const p = edgePath(L.pos[e.from],L.pos[e.to],pairCount[k]-1);
+    const lbl = (e.label||e.kind||"").slice(0,48);
+    h += `<g class="edge ${esc(e.confidence||"")}${mapState.labels?" lbl":""}" data-i="${i}" data-from="${esc(e.from)}" data-to="${esc(e.to)}" style="color:var(--muted)"><title>${esc(byId[e.from].label)} → ${esc(byId[e.to].label)}\n${esc(e.kind||"")}${e.label?": "+esc(e.label):""}</title><path d="${p.d}" marker-end="url(#arr)"/><text x="${p.lx}" y="${p.ly}" text-anchor="middle">${esc(lbl)}</text></g>`;
+  });
+  h += `</g><g id="nodes">`;
+  vis.forEach(n=>{
+    const p=L.pos[n.id];
+    const label = n.label.length>26 ? n.label.slice(0,25)+"…" : n.label;
+    const t2 = (n.tech||n.kind||"").length>32 ? (n.tech||n.kind).slice(0,31)+"…" : (n.tech||n.kind||"");
+    h += `<g class="node ${esc(n.confidence||"")}" data-id="${esc(n.id)}" transform="translate(${p.x},${p.y})"><title>${esc(n.label)}${n.notes?"\n"+esc(n.notes):""}</title>
+      <rect class="box" width="${NW}" height="${NH}" rx="8"/><rect class="bar" width="5" height="${NH-20}" x="10" y="10" rx="2.5" style="fill:${lcol(n.layer)}"/>
+      <text x="24" y="24" font-size="13" font-weight="700">${esc(label)}</text><text class="t2" x="24" y="40">${esc(t2)}</text></g>`;
+  });
+  h += `</g></g>`;
+  svg.innerHTML = h;
+  svg.querySelectorAll(".node").forEach(g=>{
+    g.addEventListener("click",ev=>{ ev.stopPropagation(); selectNode(g.dataset.id); });
+    g.addEventListener("mouseenter",()=>{ if(!mapState.sel) hilite([g.dataset.id]); });
+    g.addEventListener("mouseleave",()=>{ if(!mapState.sel) hilite(null); });
+  });
+  svg.onclick = ()=>{ if(mapState.moved) return; mapState.sel=null; hilite(null); document.getElementById("detail").innerHTML='<p class="empty">Select a component.</p>'; svg.querySelectorAll(".node.sel").forEach(x=>x.classList.remove("sel")); };
+  if(mapState.vb) applyVB();
+  if(mapState.sel && visIds.has(mapState.sel)) selectNode(mapState.sel);
+}
+function hilite(ids){
+  const svg = document.getElementById("svg"); if(!svg) return;
+  const world = svg.querySelector("#world");
+  svg.querySelectorAll(".hot").forEach(x=>x.classList.remove("hot"));
+  if(!ids){ world.classList.remove("dim"); return; }
+  const set = new Set(ids);
+  world.classList.add("dim");
+  svg.querySelectorAll(".edge").forEach(e=>{ if(set.has(e.dataset.from)||set.has(e.dataset.to)){ e.classList.add("hot"); svg.querySelector(`.node[data-id="${CSS.escape(e.dataset.from)}"]`).classList.add("hot"); svg.querySelector(`.node[data-id="${CSS.escape(e.dataset.to)}"]`).classList.add("hot"); } });
+  ids.forEach(id=>{ const n=svg.querySelector(`.node[data-id="${CSS.escape(id)}"]`); n&&n.classList.add("hot"); });
+}
+function focusMany(ids){
+  if(!ids.length) return;
+  mapState.sel=null; hilite(ids);
+  const ps = ids.map(i=>mapState.L.pos[i]).filter(Boolean);
+  if(ps.length){ const x0=Math.min(...ps.map(p=>p.x))-120, y0=Math.min(...ps.map(p=>p.y))-100, x1=Math.max(...ps.map(p=>p.x))+NW+120, y1=Math.max(...ps.map(p=>p.y))+NH+100; mapState.vb=[x0,y0,x1-x0,y1-y0]; applyVB(); }
+}
+function selectNode(id, center){
+  const n = byId[id]; if(!n || !mapState) return;
+  if(mapState.hidden.has(n.layer)){ mapState.hidden.delete(n.layer); document.querySelector(`[data-layer="${n.layer}"]`)?.classList.remove("off"); drawMap(); }
+  mapState.sel = id;
+  const svg = document.getElementById("svg");
+  svg.querySelectorAll(".node.sel").forEach(x=>x.classList.remove("sel"));
+  svg.querySelector(`.node[data-id="${CSS.escape(id)}"]`)?.classList.add("sel");
+  hilite([id]);
+  if(center && mapState.L.pos[id]){ const p=mapState.L.pos[id]; const vb=mapState.vb; mapState.vb=[p.x+NW/2-vb[2]/2,p.y+NH/2-vb[3]/2,vb[2],vb[3]]; applyVB(); }
+  const out = edges.filter(e=>e.from===id), inn = edges.filter(e=>e.to===id);
+  const apis = arr(A.apis).filter(a=>a.handler===id);
+  const ents = arr(data.entities).filter(e=>e.store===id);
+  const flows = arr(A.flows).filter(f=>arr(f.steps).some(s=>s.from===id||s.to===id));
+  const eli = (e,other,dir)=>`<li>${dir} ${nodeRef(other)} <span style="color:var(--muted)">${esc(e.kind||"")}${e.label?" · "+esc(e.label):""}</span> ${e.confidence==="inferred"?conf("inferred"):""}</li>`;
+  document.getElementById("detail").innerHTML = `
+    <div style="display:flex;gap:8px;align-items:center;justify-content:space-between"><h4>${esc(n.label)}</h4>${conf(n.confidence)}</div>
+    <div class="kv"><b>Layer</b><span><span class="chip"><span class="dot" style="background:${lcol(n.layer)}"></span>${esc(n.layer)}</span></span>
+      <b>Kind</b><span>${esc(n.kind||"—")}</span><b>Tech</b><span>${esc(n.tech||"—")}</span><b>Provider</b><span>${esc(n.provider||"—")}</span>
+      ${n.group?`<b>Group</b><span>${esc(n.group)}</span>`:""}<b>ID</b><code>${esc(n.id)}</code></div>
+    ${n.notes?`<p>${esc(n.notes)}</p>`:""}
+    ${arr(n.source).length?`<div class="sec">Sources</div><ul>${arr(n.source).map(s=>`<li>${srcLink(s)}</li>`).join("")}</ul>`:""}
+    ${out.length?`<div class="sec">Outgoing (${out.length})</div><ul>${out.map(e=>eli(e,e.to,"→")).join("")}</ul>`:""}
+    ${inn.length?`<div class="sec">Incoming (${inn.length})</div><ul>${inn.map(e=>eli(e,e.from,"←")).join("")}</ul>`:""}
+    ${apis.length?`<div class="sec">Routes (${apis.length})</div><ul>${apis.map(a=>`<li><span class="method m-${esc(String(a.method).toLowerCase())}">${esc(a.method)}</span> <code>${esc(a.path)}</code></li>`).join("")}</ul>`:""}
+    ${ents.length?`<div class="sec">Stores</div><ul>${ents.map(e=>`<li>${esc(e.name)} <span style="color:var(--muted)">${esc(e.keys||"")}</span></li>`).join("")}</ul>`:""}
+    ${flows.length?`<div class="sec">In flows</div><ul>${flows.map(f=>`<li><a href="#" data-flow="${esc(f.id||f.name)}">${esc(f.name)}</a></li>`).join("")}</ul>`:""}`;
+  document.getElementById("detail").querySelectorAll("[data-flow]").forEach(a=>a.onclick=e=>{ e.preventDefault(); show("flows"); pickFlow(a.dataset.flow); });
+}
+function applyVB(){ const svg=document.getElementById("svg"); if(svg&&mapState.vb) svg.setAttribute("viewBox", mapState.vb.join(" ")); }
+function fit(){
+  // Fit everything when it stays readable; otherwise fit the width and let the user pan down.
+  const c=document.getElementById("canvas"); const L=mapState.L; const r=c.getBoundingClientRect();
+  if(!r.width) return;
+  const pad=20, kw=r.width/(L.w+pad*2), kh=r.height/(L.h+pad*2);
+  let k=Math.min(kw,kh,1.15);
+  if(k<0.8) k=Math.max(Math.min(kw,1.15),0.45);
+  const w=r.width/k, h=r.height/k;
+  const x = L.w+pad*2<=w ? -(w-L.w)/2 : -pad;
+  const y = L.h+pad*2<=h ? -(h-L.h)/2 : -pad;
+  mapState.vb=[x,y,w,h]; applyVB();
+}
+function wirePanZoom(){
+  const c=document.getElementById("canvas"), svg=document.getElementById("svg");
+  const zoom=(f,cx,cy)=>{ const vb=mapState.vb; const r=svg.getBoundingClientRect(); const px=vb[0]+(cx-r.left)/r.width*vb[2], py=vb[1]+(cy-r.top)/r.height*vb[3]; const w=Math.min(Math.max(vb[2]*f,200),20000), h=vb[3]*(w/vb[2]); mapState.vb=[px-(px-vb[0])*(w/vb[2]),py-(py-vb[1])*(h/vb[3]),w,h]; applyVB(); };
+  c.addEventListener("wheel",e=>{ e.preventDefault(); zoom(e.deltaY>0?1.12:1/1.12,e.clientX,e.clientY); },{passive:false});
+  let start=null;
+  c.addEventListener("pointerdown",e=>{ if(e.target.closest(".zoom")) return; start={x:e.clientX,y:e.clientY,vb:mapState.vb.slice()}; mapState.moved=false; c.classList.add("drag"); });
+  window.addEventListener("pointermove",e=>{ if(!start) return; const r=svg.getBoundingClientRect(); const dx=(e.clientX-start.x)/r.width*start.vb[2], dy=(e.clientY-start.y)/r.height*start.vb[3]; if(Math.abs(e.clientX-start.x)+Math.abs(e.clientY-start.y)>4) mapState.moved=true; mapState.vb=[start.vb[0]-dx,start.vb[1]-dy,start.vb[2],start.vb[3]]; applyVB(); });
+  window.addEventListener("pointerup",()=>{ start=null; c.classList.remove("drag"); setTimeout(()=>mapState.moved=false,0); });
+  const mid=()=>{ const r=svg.getBoundingClientRect(); return [r.left+r.width/2,r.top+r.height/2]; };
+  document.getElementById("zin").onclick=()=>zoom(1/1.25,...mid());
+  document.getElementById("zout").onclick=()=>zoom(1.25,...mid());
+  document.getElementById("zfit").onclick=fit;
+  let rt; window.addEventListener("resize",()=>{ clearTimeout(rt); rt=setTimeout(()=>{ if(document.getElementById("v-map").classList.contains("on")){ drawMap(); fit(); } },150); });
+}
+
+/* ---------- flows ---------- */
+function renderFlows(el){
+  const flows = arr(A.flows);
+  el.innerHTML = `<h2>Request flows</h2><p class="lede">How key user actions travel through the system, step by step.</p>
+    <div class="flowgrid"><div class="flowlist">${flows.map(f=>`<button data-f="${esc(f.id||f.name)}"><b>${esc(f.name)}</b><small>${esc(f.trigger||"")}</small></button>`).join("")}</div><div id="flowbody"></div></div>`;
+  el.querySelector(".flowlist").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) pickFlow(b.dataset.f); });
+  if(flows.length) pickFlow(flows[0].id||flows[0].name);
+}
+function pickFlow(fid){
+  const f = arr(A.flows).find(x=>(x.id||x.name)===fid); if(!f) return;
+  document.querySelectorAll(".flowlist button").forEach(b=>b.classList.toggle("on", b.dataset.f===fid));
+  const parts=[]; arr(f.steps).forEach(s=>{ [s.from,s.to].forEach(p=>{ if(!parts.includes(p)) parts.push(p); }); });
+  const CW=176, RH=54, HY=12, HH=46, x0=20;
+  const W = x0*2 + parts.length*CW, H = HY+HH+20+arr(f.steps).length*RH+20;
+  const cx = p => x0 + parts.indexOf(p)*CW + CW/2;
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><defs><marker id="sa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="var(--accent)"/></marker></defs>`;
+  parts.forEach(p=>{ const n=byId[p]||{label:p,layer:"external"}; const x=cx(p);
+    s+=`<line x1="${x}" y1="${HY+HH}" x2="${x}" y2="${H-10}" stroke="var(--line-strong)" stroke-dasharray="3 4"/>`;
+    s+=`<g data-node="${esc(p)}" style="cursor:pointer"><rect x="${x-CW/2+8}" y="${HY}" width="${CW-16}" height="${HH}" rx="8" class="pbox"/><rect x="${x-CW/2+8}" y="${HY}" width="3" height="${HH}" rx="1.5" fill="${lcol(n.layer)}"/>
+      <text x="${x}" y="${HY+27}" text-anchor="middle" font-size="12.5" font-weight="600">${esc(n.label.length>20?n.label.slice(0,19)+"…":n.label)}</text><text x="${x}" y="${HY+41}" text-anchor="middle" font-size="10" fill="var(--muted)">${esc((n.tech||"").slice(0,24))}</text></g>`; });
+  arr(f.steps).forEach((st,i)=>{ const y=HY+HH+30+i*RH, a=cx(st.from), b=cx(st.to);
+    s+=`<text x="${x0-6}" y="${y+4}" font-size="10" fill="var(--muted)" font-family="var(--mono)">${i+1}</text>`;
+    if(a===b){ s+=`<path d="M${a},${y-6} h40 v18 h-38" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#sa)"/><text x="${a+46}" y="${y+6}" font-size="11.5">${esc(st.action||"")}</text>`; }
+    else { const mid=(a+b)/2; s+=`<line x1="${a}" y1="${y}" x2="${b+(b>a?-3:3)}" y2="${y}" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#sa)"/><text x="${mid}" y="${y-7}" text-anchor="middle" font-size="11.5" font-weight="600" style="paint-order:stroke;stroke:var(--bg);stroke-width:5px">${esc((st.action||"").slice(0,42))}</text>`; }
+  });
+  s += `</svg>`;
+  document.getElementById("flowbody").innerHTML = `<div class="card" style="margin-bottom:12px"><h3 style="margin:0 0 4px">${esc(f.name)}</h3><div style="color:var(--muted)">${esc(f.trigger||"")}</div>${f.notes?`<p style="margin:8px 0 0">${esc(f.notes)}</p>`:""}</div>
+    <div class="seq">${s}</div>
+    <ol class="steps">${arr(f.steps).map(st=>`<li><div><b>${esc(st.action||"")}</b> <span style="color:var(--muted)">${esc((byId[st.from]||{}).label||st.from)} → ${esc((byId[st.to]||{}).label||st.to)}</span>${st.detail?`<div style="color:var(--muted);font-size:13px">${esc(st.detail)}</div>`:""}${st.source?`<div>${srcLink(st.source)}</div>`:""}</div></li>`).join("")}</ol>`;
+}
+
+/* ---------- other views ---------- */
+function renderApis(el){
+  const apis = arr(A.apis);
+  el.innerHTML = `<h2>API catalog</h2><p class="lede">${apis.length} endpoints. Filter by path, method, handler or auth.</p>
+    <div class="search" style="margin-bottom:22px"><input id="apiq" placeholder="Filter endpoints…" style="padding-left:16px;width:320px"></div><div id="apit"></div>`;
+  const draw = q => { q=(q||"").toLowerCase(); document.getElementById("apit").innerHTML = table(apis.filter(a=>!q||JSON.stringify(a).toLowerCase().includes(q)),[
+    ["method","Method",v=>`<span class="method m-${esc(String(v).toLowerCase())}">${esc(v)}</span>`],["path","Path",v=>`<code>${esc(v)}</code>`],
+    ["handler","Handler",v=>v?(byId[v]?nodeRef(v):`<code>${esc(v)}</code>`):"—"],["auth","Auth"],["description","Description"],["source","Source",v=>srcLink(v)]]) || '<p class="empty">No matches.</p>'; };
+  el.querySelector("#apiq").oninput = e=>draw(e.target.value); draw("");
+}
+function renderAuth(el){
+  el.innerHTML = `<h2>Authentication & authorization</h2>
+    ${auth.summary?`<p class="summary">${esc(auth.summary)}</p>`:`<p class="callout">No auth narrative yet — add <code>auth.summary</code>.</p>`}
+    <div class="tiles" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+      ${arr(auth.providers).length?`<div class="card"><div class="sec" style="color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase">Identity providers</div><div class="chips" style="margin-top:8px">${arr(auth.providers).map(nodeRef).join("")}</div></div>`:""}
+      ${auth.token?`<div class="card"><div style="color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase">Token</div><div style="margin-top:6px">${esc(auth.token)}</div></div>`:""}
+      ${arr(auth.verified_at).length?`<div class="card"><div style="color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase">Verified at</div><div class="chips" style="margin-top:8px">${arr(auth.verified_at).map(nodeRef).join("")}</div></div>`:""}
+    </div>
+    ${section("Roles & permissions", table(auth.roles,[["name","Role",v=>`<b>${esc(v)}</b>`],["grants","Grants"],["source","Source",v=>srcLink(v)]]))}
+    ${section("Service identities", table(auth.service_identities,[["who","Who",v=>byId[v]?nodeRef(v):esc(v)],["can","Can"],["source","Source",v=>srcLink(v)]]))}
+    ${arr(auth.hints).length?section("Scanner hints",`<ul>${arr(auth.hints).map(h=>`<li><code>${esc(h)}</code></li>`).join("")}</ul>`):""}`;
+}
+function renderData(el){
+  el.innerHTML = `<h2>Data model</h2><p class="lede">Entities, where they live, how they're keyed and accessed.</p>
+    <div class="ents">${arr(data.entities).map(e=>`<div class="card ent"><h4>${esc(e.name)}</h4>
+      <div class="meta">${e.store?(byId[e.store]?nodeRef(e.store):esc(e.store)):""} ${e.owner?` · owner: ${esc(e.owner)}`:""}</div>
+      ${e.keys?`<div><code>${esc(e.keys)}</code></div>`:""}
+      ${arr(e.fields).length?`<div class="chips" style="margin-top:8px">${arr(e.fields).map(f=>`<span class="chip mono">${esc(f)}</span>`).join("")}</div>`:""}
+      ${arr(e.access_patterns).length?`<div style="margin-top:10px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Access patterns</div><ul>${arr(e.access_patterns).map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`:""}
+      ${e.source?`<div style="margin-top:8px">${srcLink(e.source)}</div>`:""}</div>`).join("")}</div>
+    ${section("Relations", table(data.relations,[["from","From"],["kind","Cardinality",v=>`<code>${esc(v)}</code>`],["to","To"]]))}`;
+}
+function renderCode(el){
+  el.innerHTML = `<h2>Code map</h2>${code.layout?`<p class="summary">${esc(code.layout)}</p>`:""}
+    ${section("Entry points", table(code.entry_points,[["path","Path",v=>srcLink(v)],["purpose","Purpose"]]))}
+    ${section("Modules", table(code.modules,[["path","Path",v=>srcLink(v)],["purpose","Purpose"],["depends_on","Depends on"]]))}`;
+}
+function renderRun(el){
+  el.innerHTML = `<h2>Run & ship</h2><p class="lede">From clone to production.</p>
+    ${arr(run.prerequisites).length?section("Prerequisites",`<div class="chips">${arr(run.prerequisites).map(p=>`<span class="chip">${esc(p)}</span>`).join("")}</div>`):""}
+    ${arr(run.setup).length?section("Local setup",`${arr(run.setup).some(s=>s.verified)?"":`<p class="lede" style="margin-top:-6px">Taken from repo files (README, scripts, CI); not run while generating this atlas.</p>`}<ol class="setup">${arr(run.setup).map(s=>`<li><div><b>${esc(s.step)}</b>${s.verified?' <span class="badge b-declared">verified</span>':""}${s.command?`<div class="cmd"><code>${esc(s.command)}</code><button class="copy" data-cmd="${esc(s.command)}">copy</button></div>`:""}${s.notes?`<div style="color:var(--muted);font-size:12.5px;margin-top:4px">${esc(s.notes)}</div>`:""}</div></li>`).join("")}</ol>`):""}
+    ${section("Environments", table(run.environments,[["name","Name",v=>`<b>${esc(v)}</b>`],["url","URL",v=>v?`<a href="${esc(v)}" target="_blank" rel="noopener">${esc(v)}</a>`:"—"],["deploy","Deploys"],["notes","Notes"]]))}
+    ${section("Configuration", table(run.config,[["key","Key",v=>`<code>${esc(v)}</code>`],["secret","",v=>v?'<span class="badge b-secret">secret</span>':""],["purpose","Purpose"],["where","Where",v=>String(v||"").split(", ").map(srcLink).join(" ")]]))}
+    ${section("Pipeline", table(run.pipeline,[["stage","Stage",v=>`<b>${esc(v)}</b>`],["tool","Tool"],["does","Does"],["source","Source",v=>srcLink(v)]]))}`;
+}
+function renderOperate(el){
+  el.innerHTML = `<h2>Operate</h2><p class="lede">Where to look when something breaks.</p>
+    ${section("Runbooks", table(op.runbooks,[["symptom","Symptom",v=>`<b>${esc(v)}</b>`],["check","Check"],["fix","Fix"]]))}
+    ${section("Logs", table(op.logs,[["what","What"],["where","Where",v=>`<code>${esc(v)}</code>`]]))}
+    ${section("Metrics & dashboards", table(op.metrics,[["what","What"],["where","Where"]]))}
+    ${section("Alarms", table(op.alarms,[["name","Alarm",v=>`<code>${esc(v)}</code>`],["condition","Condition"],["notifies","Notifies"]]))}`;
+}
+function renderContext(el){
+  el.innerHTML = `<h2>Context</h2><p class="lede">Vocabulary, ownership, history, and the risky parts.</p>
+    ${section("Glossary", table(ctx.glossary,[["term","Term",v=>`<b>${esc(v)}</b>`],["meaning","Meaning"]]))}
+    ${section("Owners", table(ctx.owners,[["area","Area",v=>`<code>${esc(v)}</code>`],["owner","Owner"],["source","Source",v=>srcLink(v)]]))}
+    ${section("Decisions", table(ctx.decisions,[["date","Date"],["title","Decision",v=>`<b>${esc(v)}</b>`],["summary","Summary"],["source","Source",v=>srcLink(v)]]))}
+    ${section("Hotspots", table(ctx.hotspots,[["path","Path",v=>srcLink(v)],["reason","Why it's hot"]]))}`;
+}
+
+/* ---------- search ---------- */
+const idx = [];
+nodes.forEach(n=>idx.push({t:n.label,s:`${n.layer} · ${n.tech||n.kind||""}`,k:(n.label+" "+n.id+" "+(n.tech||"")+" "+arr(n.source).join(" ")+" "+(n.notes||"")).toLowerCase(),go:()=>show("map",{node:n.id})}));
+arr(A.apis).forEach(a=>idx.push({t:`${a.method} ${a.path}`,s:"API",k:(a.method+" "+a.path+" "+(a.description||"")).toLowerCase(),go:()=>show("apis")}));
+arr(A.flows).forEach(f=>idx.push({t:f.name,s:"Flow",k:(f.name+" "+(f.trigger||"")).toLowerCase(),go:()=>{show("flows");pickFlow(f.id||f.name);}}));
+arr(data.entities).forEach(e=>idx.push({t:e.name,s:"Entity",k:(e.name+" "+arr(e.fields).join(" ")).toLowerCase(),go:()=>show("data")}));
+arr(ctx.glossary).forEach(g=>idx.push({t:g.term,s:"Glossary",k:(g.term+" "+g.meaning).toLowerCase(),go:()=>show("context")}));
+arr(run.config).forEach(c=>idx.push({t:c.key,s:"Config",k:c.key.toLowerCase(),go:()=>show("run")}));
+const q=document.getElementById("q"), res=document.getElementById("results");
+q.addEventListener("input",()=>{ const v=q.value.trim().toLowerCase(); if(!v){res.style.display="none";return;}
+  const hits=idx.filter(i=>i.k.includes(v)).slice(0,14); res.style.display="block";
+  res.innerHTML = hits.length?hits.map((h,i)=>`<div data-i="${idx.indexOf(h)}">${esc(h.t)}<small>${esc(h.s)}</small></div>`).join(""):'<div class="empty">No matches</div>'; });
+res.addEventListener("click",e=>{ const d=e.target.closest("[data-i]"); if(d){ idx[+d.dataset.i].go(); res.style.display="none"; q.value=""; } });
+document.addEventListener("keydown",e=>{ if(e.key==="/"&&document.activeElement!==q&&!/input|textarea/i.test(document.activeElement.tagName)){e.preventDefault();q.focus();} if(e.key==="Escape"){res.style.display="none";q.blur();} });
+document.addEventListener("click",e=>{ if(!e.target.closest(".search")) res.style.display="none"; });
+
+show((location.hash||"#overview").slice(1));
+})();
+</script>
+</body>
+</html>
