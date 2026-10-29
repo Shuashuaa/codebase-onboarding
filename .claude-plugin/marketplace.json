@@ -1,0 +1,14 @@
+{
+  "name": "codebase-onboarding",
+  "description": "Interactive onboarding maps for any codebase",
+  "owner": {
+    "name": "Shuashuaa"
+  },
+  "plugins": [
+    {
+      "name": "codebase-onboarding",
+      "source": "./plugins/codebase-onboarding",
+      "description": "Turn any codebase into an interactive onboarding map: services, auth, request flows, data, APIs and setup, in one offline HTML page."
+    }
+  ]
+}
