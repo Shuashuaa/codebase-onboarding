@@ -4,7 +4,7 @@ A Claude skill that turns any codebase into an interactive onboarding map: servi
 
 New to a project? Ask Claude *"I'm new to this repo. Map how it fits together."* and get `docs/onboarding/atlas.html`: a page you can open in any browser, commit, and share with the next new teammate.
 
-![Overview](docs/preview-overview.png)
+![codebase-onboarding demo: overview, service map, flows and API catalog](docs/demo.gif)
 
 ## What you get
 
@@ -23,7 +23,7 @@ New to a project? Ask Claude *"I'm new to this repo. Map how it fits together."*
 
 Every component and connection is marked **declared** (found in config or code) or **inferred** (Claude's reasoned guess, drawn dashed). Anything the repo can't answer becomes an open question instead of a made-up fact.
 
-![Service map](docs/preview-map.png)
+![Service map of the aws-sam-nested-stack-sample repo](docs/preview-map.png)
 
 ## Works with
 
