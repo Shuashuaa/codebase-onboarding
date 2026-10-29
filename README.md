@@ -35,7 +35,7 @@ AWS (Serverless Framework, SAM, CloudFormation, CDK, Terraform), Azure, GCP, Doc
 
 ```
 /plugin marketplace add Shuashuaa/codebase-onboarding
-/plugin install codebase-onboarding@codebase-onboarding
+/plugin install codebase-onboarding@shuashuaa
 ```
 
 Updates arrive through `/plugin`.
