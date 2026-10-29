@@ -1,6 +1,6 @@
 {
   "name": "codebase-onboarding",
-  "version": "0.1.0",
+  "version": "0.8.0",
   "description": "Turn any codebase into an interactive onboarding map: services, auth, request flows, data, APIs and setup, in one offline HTML page.",
   "author": {
     "name": "Shuashuaa"
@@ -8,5 +8,11 @@
   "homepage": "https://github.com/Shuashuaa/codebase-onboarding",
   "repository": "https://github.com/Shuashuaa/codebase-onboarding",
   "license": "MIT",
-  "keywords": ["onboarding", "architecture", "documentation", "service-map", "skill"]
+  "keywords": [
+    "onboarding",
+    "architecture",
+    "documentation",
+    "service-map",
+    "skill"
+  ]
 }
