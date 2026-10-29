@@ -6,6 +6,8 @@ New to a project? Ask Claude *"I'm new to this repo. Map how it fits together."*
 
 ![codebase-onboarding demo: overview, service map, flows and API catalog](docs/demo.gif)
 
+> **Disclaimer:** The demo and screenshots show an atlas generated from [aws-samples/aws-sam-nested-stack-sample](https://github.com/aws-samples/aws-sam-nested-stack-sample), a public AWS sample repository (Apache-2.0). It is used only to demonstrate what this skill produces on a real codebase. This project is not affiliated with or endorsed by Amazon Web Services, and no code from that repository is included here.
+
 ## What you get
 
 | Tab | Answers |
