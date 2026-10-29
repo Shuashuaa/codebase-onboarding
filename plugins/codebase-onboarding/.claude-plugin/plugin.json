@@ -1,6 +1,6 @@
 {
   "name": "codebase-onboarding",
-  "version": "1.6.0",
+  "version": "0.1.0",
   "description": "Turn any codebase into an interactive onboarding map: services, auth, request flows, data, APIs and setup, in one offline HTML page.",
   "author": {
     "name": "Shuashuaa"
